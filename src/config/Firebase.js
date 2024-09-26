@@ -24,3 +24,4 @@ setPersistence(auth, browserLocalPersistence)
   });
 
 export { auth, db, storage };
+ 

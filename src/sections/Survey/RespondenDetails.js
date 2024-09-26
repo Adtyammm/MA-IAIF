@@ -1,7 +1,5 @@
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { auth, db } from "../../config/Firebase";
 import {
   Button,
   Col,
@@ -11,17 +9,28 @@ import {
   Spinner,
   Table,
 } from "react-bootstrap";
-import Sidebar from "../../components/Sidebar";
 import DataTable from "react-data-table-component";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import * as XLSX from "xlsx";
+import Sidebar from "../../components/Sidebar";
+import { auth, db } from "../../config/Firebase";
 
 const RespondenDetails = () => {
   const { id_survey } = useParams();
-  const [surveyData, setSurveyData] = useState([]);
+  const [surveyData, setSurveyData] = useState({});
   const [answersData, setAnswersData] = useState([]);
   const [selectedResponden, setSelectedResponden] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -34,7 +43,7 @@ const RespondenDetails = () => {
       if (surveyDocSnapshot.exists()) {
         const surveyData = surveyDocSnapshot.data();
         setSurveyData(surveyData);
-        // fetch answers collection in surveys collection
+
         const answersCollectionRef = collection(surveyDocRef, "answers");
         const answersQuerySnapshot = await getDocs(answersCollectionRef);
         const answersDoc = answersQuerySnapshot.docs.map((doc) => doc.data());
@@ -44,7 +53,7 @@ const RespondenDetails = () => {
     } catch (error) {
       console.error("Error fetching survey data:", error.message);
     }
-  }, []);
+  }, [id_survey]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -58,7 +67,6 @@ const RespondenDetails = () => {
   }, [fetchSurveyData, navigate]);
 
   const handleShowModal = (row) => {
-    console.log("Selected Respondent:", row);
     setSelectedResponden(row);
     setShowModal(true);
   };
@@ -69,7 +77,6 @@ const RespondenDetails = () => {
 
   const exportToExcel = () => {
     if (answersData && answersData.length > 0) {
-      // Membuat array untuk menyimpan pertanyaan unik dari semua responden
       const uniqueQuestions = Array.from(
         new Set(
           answersData.flatMap((respondent) =>
@@ -78,7 +85,6 @@ const RespondenDetails = () => {
         )
       );
 
-      // Membuat dataToExport dengan struktur yang diinginkan
       const dataToExport = answersData.flatMap((respondent, index) => {
         const rowData = {
           No: index + 1,
@@ -136,6 +142,30 @@ const RespondenDetails = () => {
     },
   ];
 
+  const questionData = answersData.reduce((acc, respondent) => {
+    respondent.responses.forEach((response) => {
+      const question = response.question;
+      const answer = response.answer;
+      if (!acc[question]) {
+        acc[question] = {};
+      }
+      if (!acc[question][answer]) {
+        acc[question][answer] = 0;
+      }
+      acc[question][answer] += 1;
+    });
+    return acc;
+  }, {});
+
+  const formattedChartData = Object.keys(questionData).map((question) => {
+    const questionAnswers = questionData[question];
+    const questionDataObj = { question };
+    Object.keys(questionAnswers).forEach((answer) => {
+      questionDataObj[answer] = questionAnswers[answer];
+    });
+    return questionDataObj;
+  });
+
   if (isLoading) {
     return (
       <Container fluid>
@@ -178,9 +208,9 @@ const RespondenDetails = () => {
               </Link>
               <h4 className="me-2">Details</h4>
             </div>
-            <hr className="me-2"/>
+            <hr className="me-2" />
             <Container fluid className="my-4">
-              <div className="d-flex justify-content-between">
+              <div className="d-flex justify-content-between align-items-center">
                 <h4>List Responden {surveyData.name}</h4>
                 <Button variant="success" onClick={exportToExcel}>
                   Export Ke Excel
@@ -192,6 +222,31 @@ const RespondenDetails = () => {
                 columns={columns}
                 data={answersData}
               />
+
+              <h4 className="mt-4">Survey Chart</h4>
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart
+                  data={formattedChartData}
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="question" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  {formattedChartData.length > 0 &&
+                    Object.keys(formattedChartData[0])
+                      .filter((key) => key !== "question")
+                      .map((key, index) => (
+                        <Bar key={index} dataKey={key} fill="blue" />
+                      ))}
+                </BarChart>
+              </ResponsiveContainer>
             </Container>
           </Col>
         </Row>

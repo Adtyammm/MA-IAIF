@@ -1,17 +1,17 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Login from "./sections/Authentication/Login";
-import Register from "./sections/Authentication/Register";
-import Dashboard from "./sections/Dashboard/Dashboard";
+import Admin from "./sections/Admin/Admin";
 import DataAlumni from "./sections/Alumni/DataAlumni";
 import Organisasi from "./sections/Alumni/Organisasi";
-import Surveys from "./sections/Survey/Surveys";
-import SurveySetup from "./sections/Survey/SurveySetup";
-import News from "./sections/News/News";
+import Login from "./sections/Authentication/Login";
+import Dashboard from "./sections/Dashboard/Dashboard";
+import Discover from "./sections/Discover/Discover";
 import Gallery from "./sections/Gallery/Gallery";
-import Admin from "./sections/Admin/Admin";
+import News from "./sections/News/News";
 import Responden from "./sections/Survey/Responden";
 import RespondenDetails from "./sections/Survey/RespondenDetails";
+import Surveys from "./sections/Survey/Surveys";
+import SurveySetup from "./sections/Survey/SurveySetup";
 
 const Rout = () => {
   return (
@@ -27,6 +27,7 @@ const Rout = () => {
         <Route path="/kelolaresponden" element={<Responden />} />
         <Route path="/kelolaresponden/:id_survey" element={<RespondenDetails />} />
         <Route path="/news" element={<News />} />
+        <Route path="/discover" element={<Discover />} />
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>

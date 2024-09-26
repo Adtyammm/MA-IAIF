@@ -1,20 +1,20 @@
-import React, {useState} from "react";
-import { Nav, Collapse, Container } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faDashboard,
-  faPeopleGroup,
-  faGraduationCap,
-  faSitemap,
-  faSquarePollHorizontal,
-  faClipboardQuestion,
-  faSquareCheck,
-  faFileLines,
-  faNewspaper,
-  faPhotoFilm,
   faArrowRightFromBracket,
-  faLock
+  faClipboardQuestion,
+  faDashboard,
+  faFileLines,
+  faGraduationCap,
+  faLock,
+  faNewspaper,
+  faPeopleGroup,
+  faPhotoFilm,
+  faSitemap,
+  faSquareCheck,
+  faSquarePollHorizontal,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState } from "react";
+import { Collapse, Container, Nav } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../config/Firebase";
 
@@ -24,7 +24,8 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    auth.signOut()
+    auth
+      .signOut()
       .then(() => {
         navigate("/login");
       })
@@ -70,7 +71,8 @@ const Sidebar = () => {
           <div id="alumni-collapse-text" className="border rounded bg-white">
             <Nav className="flex-column">
               <Nav.Link href="/dataalumni">
-                <FontAwesomeIcon icon={faPeopleGroup} className="me-2" /> Data Alumni
+                <FontAwesomeIcon icon={faPeopleGroup} className="me-2" /> Data
+                Alumni
               </Nav.Link>
               <Nav.Link href="/organisasi">
                 <FontAwesomeIcon icon={faSitemap} className="me-2" /> Organisasi
@@ -93,16 +95,39 @@ const Sidebar = () => {
         <Collapse in={openSurvey}>
           <div id="survey-collapse-text" className="border rounded bg-white">
             <Nav className="flex-column">
-              <Nav.Link href="/kelolasurvey"><FontAwesomeIcon icon={faClipboardQuestion} className="me-3" />Kelola Survey</Nav.Link>
-              <Nav.Link href="/kelolaresponden"><FontAwesomeIcon icon={faSquareCheck} className="me-3" />Kelola Responden</Nav.Link>
+              <Nav.Link href="/kelolasurvey">
+                <FontAwesomeIcon icon={faClipboardQuestion} className="me-3" />
+                Kelola Survey
+              </Nav.Link>
+              <Nav.Link href="/kelolaresponden">
+                <FontAwesomeIcon icon={faSquareCheck} className="me-3" />
+                Kelola Responden
+              </Nav.Link>
             </Nav>
           </div>
         </Collapse>
-        <Nav.Link href="/articles"><FontAwesomeIcon icon={faFileLines} className="me-3 text-white" /> Articles</Nav.Link>
-        <Nav.Link href="/news"><FontAwesomeIcon icon={faNewspaper} className="me-3 text-white" />News</Nav.Link>
-        <Nav.Link href="/gallery"><FontAwesomeIcon icon={faPhotoFilm} className="me-2 text-white" /> Gallery</Nav.Link>
-        <Nav.Link href="/admin"><FontAwesomeIcon icon={faLock} className="me-3 text-white" /> Admin</Nav.Link>
-        <Nav.Link onClick={handleLogout}><FontAwesomeIcon icon={faArrowRightFromBracket} className="me-3 text-white" />Logout</Nav.Link>
+        <Nav.Link href="/news">
+          <FontAwesomeIcon icon={faNewspaper} className="me-3 text-white" />
+          News
+        </Nav.Link>
+        <Nav.Link href="/discover">
+          <FontAwesomeIcon icon={faFileLines} className="me-3 text-white" />
+          Discover
+        </Nav.Link>
+        <Nav.Link href="/gallery">
+          <FontAwesomeIcon icon={faPhotoFilm} className="me-2 text-white" />{" "}
+          Gallery
+        </Nav.Link>
+        <Nav.Link href="/admin">
+          <FontAwesomeIcon icon={faLock} className="me-3 text-white" /> Admin
+        </Nav.Link>
+        <Nav.Link onClick={handleLogout}>
+          <FontAwesomeIcon
+            icon={faArrowRightFromBracket}
+            className="me-3 text-white"
+          />
+          Logout
+        </Nav.Link>
       </Nav>
     </Container>
   );

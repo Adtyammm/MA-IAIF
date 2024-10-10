@@ -54,7 +54,7 @@ const Sidebar = () => {
         <hr />
       </div>
       <Nav className="flex-column">
-        <Nav.Link href="/dashboard">
+        <Nav.Link className="text-white" href="/dashboard">
           <FontAwesomeIcon icon={faDashboard} className="me-2 text-white" />{" "}
           Dashboard
         </Nav.Link>
@@ -63,6 +63,7 @@ const Sidebar = () => {
           aria-controls="alumni-collapse-text"
           aria-expanded={openAlumni}
           style={{ cursor: "pointer" }}
+          className="text-white"
         >
           <FontAwesomeIcon icon={faGraduationCap} className="me-2 text-white" />{" "}
           Alumni
@@ -85,6 +86,7 @@ const Sidebar = () => {
           aria-controls="survey-collapse-text"
           aria-expanded={openSurvey}
           style={{ cursor: "pointer" }}
+          className="text-white"
         >
           <FontAwesomeIcon
             icon={faSquarePollHorizontal}
@@ -106,22 +108,22 @@ const Sidebar = () => {
             </Nav>
           </div>
         </Collapse>
-        <Nav.Link href="/news">
+        <Nav.Link className="text-white" href="/news">
           <FontAwesomeIcon icon={faNewspaper} className="me-3 text-white" />
           News
         </Nav.Link>
-        <Nav.Link href="/discover">
+        <Nav.Link className="text-white" href="/discover">
           <FontAwesomeIcon icon={faFileLines} className="me-3 text-white" />
           Discover
         </Nav.Link>
-        <Nav.Link href="/gallery">
+        <Nav.Link className="text-white" href="/gallery">
           <FontAwesomeIcon icon={faPhotoFilm} className="me-2 text-white" />{" "}
           Gallery
         </Nav.Link>
-        <Nav.Link href="/admin">
+        <Nav.Link className="text-white" href="/admin">
           <FontAwesomeIcon icon={faLock} className="me-3 text-white" /> Admin
         </Nav.Link>
-        <Nav.Link onClick={handleLogout}>
+        <Nav.Link className="text-white" onClick={handleLogout}>
           <FontAwesomeIcon
             icon={faArrowRightFromBracket}
             className="me-3 text-white"

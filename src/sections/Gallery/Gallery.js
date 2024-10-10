@@ -14,12 +14,9 @@ import ModalEditGallery from "../../components/modals/ModalEditGallery";
 const Gallery = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [gallery, setGallery] = useState([]);
-
   const [showAddModal, setShowAddModal] = useState(false);
-
   const [selectedGallery, setSelectedGallery] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-
   const [galleryToDelete, setGalleryToDelete] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -28,23 +25,20 @@ const Gallery = () => {
   const fetchGalleryData = useCallback(async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "gallery"));
-      if (querySnapshot && querySnapshot.docs) {
-        const dataPromises = querySnapshot.docs.map(async (doc) => {
-          const galleryData = { id: doc.id, ...doc.data() };
-          if (galleryData.image) {
-            const imageUrl = await getDownloadURL(
-              ref(storage, `gallery/${galleryData.image}`)
-            );
-            galleryData.imageUrl = imageUrl;
-          }
-          return galleryData;
-        });
-        const data = await Promise.all(dataPromises);
+      if (querySnapshot && !querySnapshot.empty) {
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        console.log("Gallery Data:", data); // Debugging untuk memeriksa data yang diambil
         setGallery(data);
-        setIsLoading(false);
+      } else {
+        console.warn("No data found in the gallery collection");
+        setGallery([]); // Set ke array kosong jika tidak ada data
       }
+      setIsLoading(false);
     } catch (error) {
-      console.error("Error fetching gallery data : ", error.message);
+      console.error("Error fetching gallery data:", error.message);
       setIsLoading(false);
     }
   }, []);
@@ -64,7 +58,7 @@ const Gallery = () => {
   const handleCloseAddModal = () => {
     fetchGalleryData();
     setShowAddModal(false);
-  }
+  };
 
   const handleShowEditModal = (gallery) => {
     setSelectedGallery(gallery);
@@ -77,33 +71,32 @@ const Gallery = () => {
     setGalleryToDelete(gallery);
     setShowDeleteModal(true);
   };
-  
+
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
     setGalleryToDelete(null);
   };
-  
+
   const handleDelete = async (galleryId, imageName) => {
     try {
       setIsLoading(true);
-
       if (imageName) {
         const imageRef = ref(storage, `gallery/${imageName}`);
         await deleteObject(imageRef).catch((error) => {
           console.error("Error deleting old photo: ", error.message);
         });
       }
-  
+
       const docRef = doc(db, "gallery", galleryId);
       await deleteDoc(docRef);
       await fetchGalleryData();
     } catch (error) {
-      console.error("Error deleting gallery: ", error.message);
+      console.error("Error deleting gallery:", error.message);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   const confirmDelete = async () => {
     if (galleryToDelete) {
       await handleDelete(galleryToDelete.id, galleryToDelete.image);
@@ -115,8 +108,6 @@ const Gallery = () => {
     const [year, month, day] = dateString.split("-");
     return `${day}-${month}-${year}`;
   };
-  
-  
 
   const columns = [
     {
@@ -136,7 +127,7 @@ const Gallery = () => {
     {
       name: "Foto",
       selector: (row) =>
-        row.imageUrl ? (
+        row.image ? (
           <img
             className="my-2"
             src={row.imageUrl}
@@ -149,7 +140,7 @@ const Gallery = () => {
     },
     {
       name: "Aksi",
-      cell: (row, index) => (
+      cell: (row) => (
         <div>
           <Button variant="success" onClick={() => handleShowEditModal(row)}>
             <FontAwesomeIcon icon={faPenToSquare} />
@@ -209,7 +200,16 @@ const Gallery = () => {
                 <h4>List Gallery</h4>
                 <Button onClick={handleShowAddModal}>Tambah Koleksi</Button>
               </div>
-              <DataTable striped pagination columns={columns} data={gallery} />
+              {gallery.length === 0 ? (
+                <p className="text-center">Tidak ada data untuk ditampilkan.</p>
+              ) : (
+                <DataTable
+                  striped
+                  pagination
+                  columns={columns}
+                  data={gallery}
+                />
+              )}
             </Container>
           </Col>
         </Row>

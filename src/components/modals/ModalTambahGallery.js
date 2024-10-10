@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { db, storage } from "../../config/Firebase";
-import { ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { addDoc, collection } from "firebase/firestore";
 import { Modal, Button, Form } from "react-bootstrap";
 
@@ -10,6 +10,7 @@ const ModalTambahGallery = ({ show, handleClose }) => {
       title: "",
       date: "",
       image: "",
+      imageUrl: "",
     }),
     []
   );
@@ -41,16 +42,23 @@ const ModalTambahGallery = ({ show, handleClose }) => {
         return;
       }
 
+      // Upload image to Firebase Storage
       const imageRef = ref(storage, `gallery/${imageUpload.name}`);
       await uploadBytes(imageRef, imageUpload);
+
+      // Get the download URL for the uploaded image
+      const imageUrl = await getDownloadURL(imageRef);
 
       const newUserData = {
         ...formData,
         image: imageUpload.name,
+        imageUrl: imageUrl, // Save the image URL to Firestore
       };
 
+      // Save gallery data including the image URL to Firestore
       await addDoc(collection(db, "gallery"), newUserData);
 
+      // Reset the form data and close the modal
       setFormData(initialFormData);
       setImageUpload(null);
       handleClose();
@@ -90,18 +98,17 @@ const ModalTambahGallery = ({ show, handleClose }) => {
             />
           </Form.Group>
 
-          <Form.Group controlId="formDate">
+          <Form.Group controlId="formDate" className="mt-3">
             <Form.Label>Tanggal</Form.Label>
             <Form.Control
               type="date"
-              placeholder="Tulis konten disini"
               name="date"
               value={formData.date}
               onChange={handleChange}
             />
           </Form.Group>
 
-          <Form.Group controlId="formPreview">
+          <Form.Group controlId="formPreview" className="mt-3">
             <Form.Label>Foto</Form.Label>
             <Form.Control
               type="file"

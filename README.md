@@ -2,12 +2,6 @@
 
 project ini dibangun dengan ReactJS, Bootstrap, dan Firebase (Authentication, Firestore, Storage)
 
-## NOTES
-
-1. Pelajari kode yang sudah dibuat.
-2. Segera buat fungsi untuk mengatur "articles".
-3. Jangan lupa commit untuk setiap perubahan yang terjadi.
-4. Sukses.
 
 ## For Your Info, To Do First
 
